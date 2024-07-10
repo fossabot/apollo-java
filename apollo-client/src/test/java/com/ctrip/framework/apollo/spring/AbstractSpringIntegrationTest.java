@@ -27,6 +27,8 @@ import com.ctrip.framework.apollo.internals.SimpleConfig;
 import com.ctrip.framework.apollo.internals.YamlConfigFile;
 import com.ctrip.framework.apollo.spring.config.PropertySourcesProcessor;
 import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +61,7 @@ import org.springframework.util.ReflectionUtils.FieldFilter;
  * @author Jason Song(song_s@ctrip.com)
  */
 public abstract class AbstractSpringIntegrationTest {
-  private static final Map<String, Config> CONFIG_REGISTRY = Maps.newHashMap();
+  private static final Table<String, String, Config> CONFIG_REGISTRY = HashBasedTable.create();
   private static final Map<String, ConfigFile> CONFIG_FILE_REGISTRY = Maps.newHashMap();
   private static Method CONFIG_SERVICE_RESET;
   private static Method PROPERTY_SOURCES_PROCESSOR_RESET;
@@ -85,14 +87,14 @@ public abstract class AbstractSpringIntegrationTest {
     doTearDown();
   }
 
-  protected SimpleConfig prepareConfig(String namespaceName, Properties properties) {
+  protected SimpleConfig prepareConfig(String appId, String namespaceName, Properties properties) {
     ConfigRepository configRepository = mock(ConfigRepository.class);
 
     when(configRepository.getConfig()).thenReturn(properties);
 
-    SimpleConfig config = new SimpleConfig(ConfigConsts.NAMESPACE_APPLICATION, configRepository);
+    SimpleConfig config = new SimpleConfig(appId, ConfigConsts.NAMESPACE_APPLICATION, configRepository);
 
-    mockConfig(namespaceName, config);
+    mockConfig(appId, namespaceName, config);
 
     return config;
   }
@@ -113,13 +115,13 @@ public abstract class AbstractSpringIntegrationTest {
     return properties;
   }
 
-  protected static YamlConfigFile prepareYamlConfigFile(String namespaceNameWithFormat, Properties properties) {
+  protected static YamlConfigFile prepareYamlConfigFile(String appId, String namespaceNameWithFormat, Properties properties) {
     ConfigRepository configRepository = mock(ConfigRepository.class);
 
     when(configRepository.getConfig()).thenReturn(properties);
 
     // spy it for testing after
-    YamlConfigFile configFile = spy(new YamlConfigFile(namespaceNameWithFormat, configRepository));
+    YamlConfigFile configFile = spy(new YamlConfigFile(appId, namespaceNameWithFormat, configRepository));
 
     mockConfigFile(namespaceNameWithFormat, configFile);
 
@@ -161,8 +163,8 @@ public abstract class AbstractSpringIntegrationTest {
   }
 
 
-  protected static void mockConfig(String namespace, Config config) {
-    CONFIG_REGISTRY.put(namespace, config);
+  protected static void mockConfig(String appId, String namespace, Config config) {
+    CONFIG_REGISTRY.put(appId, namespace, config);
   }
 
   protected static void mockConfigFile(String namespaceNameWithFormat, ConfigFile configFile) {
@@ -195,7 +197,12 @@ public abstract class AbstractSpringIntegrationTest {
 
     @Override
     public Config getConfig(String namespace) {
-      Config config = CONFIG_REGISTRY.get(namespace);
+      return getConfig("", namespace);
+    }
+
+    @Override
+    public Config getConfig(String appId, String namespace) {
+      Config config = CONFIG_REGISTRY.get(appId, namespace);
       if (config != null) {
         return config;
       }
@@ -204,7 +211,12 @@ public abstract class AbstractSpringIntegrationTest {
 
     @Override
     public ConfigFile getConfigFile(String namespace, ConfigFileFormat configFileFormat) {
-      ConfigFile configFile = CONFIG_FILE_REGISTRY.get(String.format("%s.%s", namespace, configFileFormat.getValue()));
+      return this.getConfigFile("", namespace, configFileFormat);
+    }
+
+    @Override
+    public ConfigFile getConfigFile(String appId, String namespace, ConfigFileFormat configFileFormat) {
+      ConfigFile configFile = CONFIG_FILE_REGISTRY.get(String.format("%s+%s.%s", appId, namespace, configFileFormat.getValue()));
       if (configFile != null) {
         return configFile;
       }

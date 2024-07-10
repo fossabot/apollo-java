@@ -59,11 +59,11 @@ public class ConfigServiceTest {
   public void testHackConfig() {
     String someNamespace = "hack";
     String someKey = "first";
-    ConfigService.setConfig(new MockConfig(someNamespace));
+    ConfigService.setConfig(new MockConfig(someAppId, someNamespace));
 
     Config config = ConfigService.getAppConfig();
 
-    assertEquals(someNamespace + ":" + someKey, config.getProperty(someKey, null));
+    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + someNamespace + ":" + someKey, config.getProperty(someKey, null));
     assertEquals(null, config.getProperty("unknown", null));
   }
 
@@ -74,7 +74,7 @@ public class ConfigServiceTest {
 
     Config config = ConfigService.getAppConfig();
 
-    assertEquals(ConfigConsts.NAMESPACE_APPLICATION + ":" + someKey,
+    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + ConfigConsts.NAMESPACE_APPLICATION + ":" + someKey,
         config.getProperty(someKey, null));
   }
 
@@ -86,7 +86,7 @@ public class ConfigServiceTest {
 
     Config config = ConfigService.getConfig(someNamespace);
 
-    assertEquals(someNamespace + ":" + someKey, config.getProperty(someKey, null));
+    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + someNamespace + ":" + someKey, config.getProperty(someKey, null));
     assertEquals(null, config.getProperty("unknown", null));
   }
 
@@ -97,17 +97,18 @@ public class ConfigServiceTest {
     String someNamespaceFileName =
         String.format("%s.%s", someNamespace, someConfigFileFormat.getValue());
     MockInjector.setInstance(ConfigFactory.class, someNamespaceFileName, new MockConfigFactory());
-
     ConfigFile configFile = ConfigService.getConfigFile(someNamespace, someConfigFileFormat);
 
-    assertEquals(someNamespaceFileName, configFile.getNamespace());
-    assertEquals(someNamespaceFileName + ":" + someConfigFileFormat.getValue(), configFile.getContent());
+    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + someNamespaceFileName, configFile.getNamespace());
+    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + someNamespaceFileName + ":" + someConfigFileFormat.getValue(), configFile.getContent());
   }
 
   private static class MockConfig extends AbstractConfig {
+    private final String m_appId;
     private final String m_namespace;
 
-    public MockConfig(String namespace) {
+    public MockConfig(String appId, String namespace) {
+      m_appId = appId;
       m_namespace = namespace;
     }
 
@@ -117,7 +118,7 @@ public class ConfigServiceTest {
         return null;
       }
 
-      return m_namespace + ":" + key;
+      return m_appId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + m_namespace + ":" + key;
     }
 
     @Override
@@ -133,6 +134,7 @@ public class ConfigServiceTest {
 
   private static class MockConfigFile implements ConfigFile {
     private ConfigFileFormat m_configFileFormat;
+    private String m_appId;
     private String m_namespace;
 
     public MockConfigFile(String namespace,
@@ -141,14 +143,26 @@ public class ConfigServiceTest {
       m_configFileFormat = configFileFormat;
     }
 
+    public MockConfigFile(String appId, String namespace,
+                          ConfigFileFormat configFileFormat) {
+      m_appId = appId;
+      m_namespace = namespace;
+      m_configFileFormat = configFileFormat;
+    }
+
     @Override
     public String getContent() {
-      return m_namespace + ":" + m_configFileFormat.getValue();
+      return m_appId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + m_namespace + ":" + m_configFileFormat.getValue();
     }
 
     @Override
     public boolean hasContent() {
       return true;
+    }
+
+    @Override
+    public String getAppId() {
+      return null;
     }
 
     @Override
@@ -180,12 +194,22 @@ public class ConfigServiceTest {
   public static class MockConfigFactory implements ConfigFactory {
     @Override
     public Config create(String namespace) {
-      return new MockConfig(namespace);
+      return this.create(someAppId, namespace);
+    }
+
+    @Override
+    public Config create(String appId, String namespace) {
+      return new MockConfig(appId, namespace);
     }
 
     @Override
     public ConfigFile createConfigFile(String namespace, ConfigFileFormat configFileFormat) {
-      return new MockConfigFile(namespace, configFileFormat);
+      return createConfigFile(someAppId, namespace, configFileFormat);
+    }
+
+    @Override
+    public ConfigFile createConfigFile(String appId, String namespace, ConfigFileFormat configFileFormat) {
+      return new MockConfigFile(appId, namespace, configFileFormat);
     }
   }
 
