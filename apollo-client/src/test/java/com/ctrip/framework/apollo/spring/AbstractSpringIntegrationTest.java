@@ -180,6 +180,12 @@ public abstract class AbstractSpringIntegrationTest {
     ConfigManager defaultConfigManager = defaultInjector.getInstance(ConfigManager.class);
     MockInjector.setInstance(ConfigManager.class, new MockConfigManager(defaultConfigManager));
     MockInjector.setDelegate(defaultInjector);
+
+    MockConfigUtil mockConfigUtil = new MockConfigUtil();
+    mockConfigUtil.setAutoUpdateInjectedSpringProperties(false);
+
+    MockInjector.setInstance(ConfigUtil.class, mockConfigUtil);
+
   }
 
   protected static void doTearDown() {
@@ -235,6 +241,10 @@ public abstract class AbstractSpringIntegrationTest {
     @Override
     public boolean isAutoUpdateInjectedSpringPropertiesEnabled() {
       return isAutoUpdateInjectedSpringProperties;
+    }
+
+    public String getAppId() {
+      return "someAppId";
     }
   }
 }

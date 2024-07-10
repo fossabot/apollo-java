@@ -66,10 +66,15 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
   private ApplicationEventPublisher applicationEventPublisher;
 
   public PropertySourcesProcessor(){
-    configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+    if(configUtil == null){
+      configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+    }
   }
 
   public static boolean addNamespaces(Collection<String> namespaces, int order) {
+    if(configUtil == null){
+      configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+    }
     return addNamespaces(configUtil.getAppId(), namespaces, order);
   }
 
