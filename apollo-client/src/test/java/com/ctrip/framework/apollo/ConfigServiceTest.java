@@ -95,12 +95,12 @@ public class ConfigServiceTest {
     String someNamespace = "mock";
     ConfigFileFormat someConfigFileFormat = ConfigFileFormat.Properties;
     String someNamespaceFileName =
-        String.format("%s.%s", someNamespace, someConfigFileFormat.getValue());
+        String.format("%s+%s.%s", someAppId, someNamespace, someConfigFileFormat.getValue());
     MockInjector.setInstance(ConfigFactory.class, someNamespaceFileName, new MockConfigFactory());
     ConfigFile configFile = ConfigService.getConfigFile(someNamespace, someConfigFileFormat);
 
-    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + someNamespaceFileName, configFile.getNamespace());
-    assertEquals(someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + someNamespaceFileName + ":" + someConfigFileFormat.getValue(), configFile.getContent());
+    assertEquals(someNamespaceFileName, configFile.getNamespace());
+    assertEquals(someNamespaceFileName + ":" + someConfigFileFormat.getValue(), configFile.getContent());
   }
 
   private static class MockConfig extends AbstractConfig {
@@ -152,7 +152,7 @@ public class ConfigServiceTest {
 
     @Override
     public String getContent() {
-      return m_appId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + m_namespace + ":" + m_configFileFormat.getValue();
+      return m_namespace + ":" + m_configFileFormat.getValue();
     }
 
     @Override

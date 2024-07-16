@@ -19,6 +19,7 @@ package com.ctrip.framework.apollo.spring;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.ConfigFileChangeListener;
+import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.ApolloClientSystemConsts;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.SimpleConfig;
@@ -28,6 +29,8 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.spring.annotation.ApolloConfig;
 import com.ctrip.framework.apollo.spring.annotation.ApolloConfigChangeListener;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import com.ctrip.framework.apollo.spring.annotation.MultipleConfig;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.SettableFuture;
@@ -462,6 +465,8 @@ public class JavaConfigAnnotationTest extends AbstractSpringIntegrationTest {
     mockConfig(someAppId, ConfigConsts.NAMESPACE_APPLICATION, applicationConfig);
 
     System.setProperty(ApolloClientSystemConsts.APOLLO_PROPERTY_NAMES_CACHE_ENABLE, "true");
+    MockConfigUtil configUtil = new MockConfigUtil();
+    MockInjector.setInstance(ConfigUtil.class, configUtil);
 
     getSimpleBean(TestApolloConfigChangeListenerResolveExpressionSimpleConfiguration.class);
 
@@ -641,6 +646,32 @@ public class JavaConfigAnnotationTest extends AbstractSpringIntegrationTest {
         TestApolloConfigResolveExpressionFromApolloConfigNamespaceApplication.class);
     assertSame(config, configuration.getConfig());
     assertSame(yamlConfig, configuration.getYamlConfig());
+  }
+
+  @Test
+  public void testApolloMultipleConfig() throws IOException {
+    Config applicationConfig = mock(Config.class);
+    Config fxApolloConfig = mock(Config.class);
+    Config multipleConfig = mock(Config.class);
+    String someKey = "someKey";
+    String someValue = "someValue";
+
+    mockConfig(someAppId, ConfigConsts.NAMESPACE_APPLICATION, applicationConfig);
+    mockConfig("someAppId2", "namespace2", multipleConfig);
+    mockConfig(someAppId, FX_APOLLO_NAMESPACE, fxApolloConfig);
+
+    prepareYamlConfigFile(someAppId, APPLICATION_YAML_NAMESPACE, readYamlContentAsConfigFileProperties("case9.yml"));
+
+    TestApolloConfigBean5 bean = getBean(TestApolloConfigBean5.class, TestApolloMultipleConfig.class);
+
+    assertEquals(applicationConfig, bean.getConfig());
+    assertEquals(multipleConfig, bean.getMultipleConfig());
+    assertEquals(fxApolloConfig, bean.getYetAnotherConfig());
+
+    Config yamlConfig = bean.getYamlConfig();
+    assertEquals(someValue, yamlConfig.getProperty(someKey, null));
+
+
   }
 
   private static class SystemPropertyKeyConstants {
@@ -1053,6 +1084,45 @@ public class JavaConfigAnnotationTest extends AbstractSpringIntegrationTest {
 
     public SettableFuture<ConfigChangeEvent> getConfigChangeEventFuture() {
       return configChangeEventFuture;
+    }
+
+    public Config getYamlConfig() {
+      return yamlConfig;
+    }
+  }
+
+  @Configuration
+  @EnableApolloConfig(value = {"FX_APOLLO_NAMESPACE", "APPLICATION_YAML_NAMESPACE"},
+      multipleConfig = {@MultipleConfig(appId = "someAppId2", namespaces = {"namespace2"})})
+  static class TestApolloMultipleConfig{
+
+    @Bean
+    public TestApolloConfigBean5 bean(){
+      return new TestApolloConfigBean5();
+    }
+
+  }
+
+  static class TestApolloConfigBean5 {
+    @ApolloConfig
+    private Config config;
+    @ApolloConfig(appId = "someAppId2",value = "namespace2")
+    private Config multipleConfig;
+    @ApolloConfig(FX_APOLLO_NAMESPACE)
+    private Config yetAnotherConfig;
+    @ApolloConfig(APPLICATION_YAML_NAMESPACE)
+    private Config yamlConfig;
+
+    public Config getConfig() {
+      return config;
+    }
+
+    public Config getMultipleConfig() {
+      return multipleConfig;
+    }
+
+    public Config getYetAnotherConfig() {
+      return yetAnotherConfig;
     }
 
     public Config getYamlConfig() {

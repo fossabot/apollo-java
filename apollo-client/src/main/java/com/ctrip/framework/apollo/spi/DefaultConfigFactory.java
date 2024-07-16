@@ -173,10 +173,10 @@ public class DefaultConfigFactory implements ConfigFactory {
   String trimNamespaceFormat(String appId, String namespaceName, ConfigFileFormat format) {
     String extension = "." + format.getValue();
     if (!namespaceName.toLowerCase().endsWith(extension)) {
-      return appId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + namespaceName;
+      return namespaceName;
     }
 
-    return appId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + namespaceName.substring(0, namespaceName.length() - extension.length());
+    return namespaceName.substring(0, namespaceName.length() - extension.length());
   }
 
 }

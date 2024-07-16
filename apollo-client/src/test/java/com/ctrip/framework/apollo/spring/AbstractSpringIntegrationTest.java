@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import com.ctrip.framework.apollo.core.ApolloClientSystemConsts;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.ConfigRepository;
 import com.ctrip.framework.apollo.internals.DefaultInjector;
@@ -123,7 +124,7 @@ public abstract class AbstractSpringIntegrationTest {
     // spy it for testing after
     YamlConfigFile configFile = spy(new YamlConfigFile(appId, namespaceNameWithFormat, configRepository));
 
-    mockConfigFile(namespaceNameWithFormat, configFile);
+    mockConfigFile(appId, namespaceNameWithFormat, configFile);
 
     return configFile;
   }
@@ -171,7 +172,13 @@ public abstract class AbstractSpringIntegrationTest {
     CONFIG_FILE_REGISTRY.put(namespaceNameWithFormat, configFile);
   }
 
+  protected static void mockConfigFile(String appId,String namespaceNameWithFormat, ConfigFile configFile) {
+    CONFIG_FILE_REGISTRY.put(appId + "+" + namespaceNameWithFormat, configFile);
+  }
+
   protected static void doSetUp() {
+    System.setProperty(ApolloClientSystemConsts.APP_ID, "someAppId");
+
     //as ConfigService is singleton, so we must manually clear its container
     ReflectionUtils.invokeMethod(CONFIG_SERVICE_RESET, null);
     //as PropertySourcesProcessor has some static variables, so we must manually clear them
@@ -181,11 +188,9 @@ public abstract class AbstractSpringIntegrationTest {
     MockInjector.setInstance(ConfigManager.class, new MockConfigManager(defaultConfigManager));
     MockInjector.setDelegate(defaultInjector);
 
-    MockConfigUtil mockConfigUtil = new MockConfigUtil();
-    mockConfigUtil.setAutoUpdateInjectedSpringProperties(false);
-
-    MockInjector.setInstance(ConfigUtil.class, mockConfigUtil);
-
+    MockConfigUtil configUtil = new MockConfigUtil();
+    configUtil.setAutoUpdateInjectedSpringProperties(true);
+    MockInjector.setInstance(ConfigUtil.class, configUtil);
   }
 
   protected static void doTearDown() {
@@ -203,7 +208,7 @@ public abstract class AbstractSpringIntegrationTest {
 
     @Override
     public Config getConfig(String namespace) {
-      return getConfig("", namespace);
+      return getConfig("someAppId", namespace);
     }
 
     @Override
@@ -212,12 +217,12 @@ public abstract class AbstractSpringIntegrationTest {
       if (config != null) {
         return config;
       }
-      return delegate.getConfig(namespace);
+      return delegate.getConfig(appId, namespace);
     }
 
     @Override
     public ConfigFile getConfigFile(String namespace, ConfigFileFormat configFileFormat) {
-      return this.getConfigFile("", namespace, configFileFormat);
+      return this.getConfigFile("someAppId", namespace, configFileFormat);
     }
 
     @Override

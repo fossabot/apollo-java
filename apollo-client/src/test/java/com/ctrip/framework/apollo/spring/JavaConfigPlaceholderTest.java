@@ -108,7 +108,7 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
     PropertiesCompatibleConfigFile configFile = mock(PropertiesCompatibleConfigFile.class);
     when(configFile.asProperties()).thenReturn(properties);
 
-    mockConfigFile("application.yaml", configFile);
+    mockConfigFile(someAppId, "application.yaml", configFile);
 
     check(someTimeout, someBatch, AppConfig9.class);
   }
@@ -124,7 +124,7 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
     PropertiesCompatibleConfigFile configFile = mock(PropertiesCompatibleConfigFile.class);
     when(configFile.asProperties()).thenReturn(properties);
 
-    mockConfigFile("application.yaml", configFile);
+    mockConfigFile(someAppId, "application.yaml", configFile);
 
     check(someTimeout, someBatch, AppConfig10.class);
   }
@@ -158,7 +158,7 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
     PropertiesCompatibleConfigFile configFile = mock(PropertiesCompatibleConfigFile.class);
     when(configFile.asProperties()).thenReturn(properties);
 
-    mockConfigFile("application.yml", configFile);
+    mockConfigFile(someAppId, "application.yml", configFile);
 
     Config fxApollo = mock(Config.class);
     when(fxApollo.getProperty(eq(TIMEOUT_PROPERTY), Mockito.nullable(String.class))).thenReturn(String.valueOf(anotherTimeout));

@@ -285,7 +285,7 @@ public class RemoteConfigRepositoryTest {
         return null;
       }
 
-    }).when(someListener).onRepositoryChange(any(String.class), any(Properties.class));
+    }).when(someListener).onRepositoryChange(any(String.class), any(String.class), any(Properties.class));
 
     RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(someAppId, someNamespace);
     remoteConfigRepository.addChangeListener(someListener);
@@ -307,11 +307,11 @@ public class RemoteConfigRepositoryTest {
     when(pollResponse.getBody()).thenReturn(Lists.newArrayList(someNotification));
     when(someResponse.getBody()).thenReturn(newApolloConfig);
 
-    //longPollFinished.get(30_000, TimeUnit.MILLISECONDS);
+    longPollFinished.get(30_000, TimeUnit.MILLISECONDS);
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someListener, times(1)).onRepositoryChange(eq(someNamespace), captor.capture());
+    verify(someListener, times(1)).onRepositoryChange(eq(someAppId), eq(someNamespace), captor.capture());
     assertEquals(newConfigurations, captor.getValue());
 
     final ArgumentCaptor<HttpRequest> httpRequestArgumentCaptor = ArgumentCaptor

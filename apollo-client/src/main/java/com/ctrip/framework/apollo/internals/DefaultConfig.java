@@ -307,7 +307,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
   }
 
   private Properties loadFromResource(String appId, String namespace) {
-    String name = String.format("META-INF/config/%s_%s.properties", appId, namespace);
+    String name = String.format("META-INF/config/%s+%s.properties", appId, namespace);
     InputStream in = ClassLoaderUtil.getLoader().getResourceAsStream(name);
     Properties properties = null;
 

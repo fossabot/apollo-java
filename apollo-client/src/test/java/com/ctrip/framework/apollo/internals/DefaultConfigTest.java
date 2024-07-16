@@ -139,7 +139,7 @@ public class DefaultConfigTest {
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
     //set up resource file
-    File resourceFile = new File(someResourceDir, someNamespace + ".properties");
+    File resourceFile = new File(someResourceDir, someAppId + "+" +someNamespace + ".properties");
     Files.write(someKey + "=" + someResourceValue, resourceFile, Charsets.UTF_8);
     Files.append(System.getProperty("line.separator"), resourceFile, Charsets.UTF_8);
     Files.append(anotherKey + "=" + someResourceValue, resourceFile, Charsets.UTF_8);
@@ -645,7 +645,7 @@ public class DefaultConfigTest {
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
     //set up resource file
-    File resourceFile = new File(someResourceDir, someNamespace + ".properties");
+    File resourceFile = new File(someResourceDir, someAppId + "+" + someNamespace + ".properties");
     Files.append(yetAnotherKey + "=" + yetAnotherResourceValue, resourceFile, Charsets.UTF_8);
 
     DefaultConfig defaultConfig =

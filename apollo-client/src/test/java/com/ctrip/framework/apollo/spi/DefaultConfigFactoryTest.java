@@ -204,7 +204,7 @@ public class DefaultConfigFactoryTest {
   }
 
   private String appIdAndNamespace(String namespace){
-    return someAppId + ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR + namespace;
+    return namespace;
   }
 
 
