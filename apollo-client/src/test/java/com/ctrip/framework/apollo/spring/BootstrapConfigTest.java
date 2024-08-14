@@ -403,7 +403,7 @@ public class BootstrapConfigTest {
           AbstractSpringIntegrationTest {
 
     @BeforeClass
-    public static void beforeClass() {
+    public static void beforeClass() throws Exception {
       doSetUp();
 
       System.setProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, "true");
@@ -415,7 +415,7 @@ public class BootstrapConfigTest {
     }
 
     @AfterClass
-    public static void afterClass() {
+    public static void afterClass() throws NoSuchFieldException, IllegalAccessException {
       System.clearProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED);
       System.clearProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_EAGER_LOAD_ENABLED);
 

@@ -25,7 +25,7 @@ import java.util.Set;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ConfigChangeEvent {
-  private String m_appId;
+  private final String m_appId;
   private final String m_namespace;
   private final Map<String, ConfigChange> m_changes;
   /**

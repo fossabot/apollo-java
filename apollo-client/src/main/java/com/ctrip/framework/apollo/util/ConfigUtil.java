@@ -510,10 +510,7 @@ public class ConfigUtil {
     return defaultVal;
   }
 
-  public String getAppSecret(String appId){
-    if(appId.equals(getAppId())){
-      return getAccessKeySecret();
-    }
-    return System.getProperty("apollo.accesskey." + appId + ".secret", "");
+  public String getAccessKeySecret(String appId){
+    return Foundation.app().getAccessKeySecret(appId);
   }
 }

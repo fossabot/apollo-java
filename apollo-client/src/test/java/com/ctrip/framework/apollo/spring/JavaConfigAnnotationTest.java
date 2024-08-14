@@ -1093,7 +1093,7 @@ public class JavaConfigAnnotationTest extends AbstractSpringIntegrationTest {
 
   @Configuration
   @EnableApolloConfig(value = {"FX_APOLLO_NAMESPACE", "APPLICATION_YAML_NAMESPACE"},
-      multipleConfig = {@MultipleConfig(appId = "someAppId2", namespaces = {"namespace2"})})
+      multipleConfigs = {@MultipleConfig(appId = "someAppId2", namespaces = {"namespace2"})})
   static class TestApolloMultipleConfig{
 
     @Bean

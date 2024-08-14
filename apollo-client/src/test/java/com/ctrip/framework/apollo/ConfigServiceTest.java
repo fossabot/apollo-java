@@ -18,8 +18,10 @@ package com.ctrip.framework.apollo;
 
 import static org.junit.Assert.assertEquals;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.MetaDomainConsts;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import java.lang.reflect.Field;
 import java.util.Set;
 
 import org.junit.After;
@@ -44,7 +46,11 @@ public class ConfigServiceTest {
   public void setUp() throws Exception {
     someAppId = "someAppId";
 
+    Field field = ConfigService.class.getDeclaredField("m_configUtil");
+    field.setAccessible(true);
     MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
+    field.set(null, ApolloInjector.getInstance(ConfigUtil.class));
+
   }
 
   @After

@@ -61,18 +61,15 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
 
   private final ConfigPropertySourceFactory configPropertySourceFactory = SpringInjector
       .getInstance(ConfigPropertySourceFactory.class);
-  private ConfigUtil configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+  private static ConfigUtil configUtil = ApolloInjector.getInstance(ConfigUtil.class);
   private ConfigurableEnvironment environment;
   private ApplicationEventPublisher applicationEventPublisher;
 
-  public PropertySourcesProcessor(){
-    if(configUtil == null){
-      configUtil = ApolloInjector.getInstance(ConfigUtil.class);
-    }
+
+  public PropertySourcesProcessor() {
   }
 
   public static boolean addNamespaces(Collection<String> namespaces, int order) {
-    ConfigUtil configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     return addNamespaces(configUtil.getAppId(), namespaces, order);
   }
 

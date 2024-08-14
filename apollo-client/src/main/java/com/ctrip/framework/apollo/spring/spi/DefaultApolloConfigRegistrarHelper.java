@@ -57,7 +57,7 @@ public class DefaultApolloConfigRegistrarHelper implements ApolloConfigRegistrar
 
     configMap.put(configUtil.getAppId(), this.resolveNamespaces(namespaces));
 
-    AnnotationAttributes[] multipleConfigs = attributes.getAnnotationArray("multipleConfig");
+    AnnotationAttributes[] multipleConfigs = attributes.getAnnotationArray("multipleConfigs");
     if (multipleConfigs != null) {
       for (AnnotationAttributes multipleConfig : multipleConfigs) {
         String appId = multipleConfig.getString("appId");

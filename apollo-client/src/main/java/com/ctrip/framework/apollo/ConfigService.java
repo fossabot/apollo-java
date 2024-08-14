@@ -19,9 +19,11 @@ package com.ctrip.framework.apollo;
 import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import com.ctrip.framework.apollo.core.utils.StringUtils;
 import com.ctrip.framework.apollo.internals.ConfigManager;
 import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigRegistry;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 
 /**
  * Entry point for client config use
@@ -30,6 +32,8 @@ import com.ctrip.framework.apollo.spi.ConfigRegistry;
  */
 public class ConfigService {
   private static final ConfigService s_instance = new ConfigService();
+
+  private static ConfigUtil m_configUtil = ApolloInjector.getInstance(ConfigUtil.class);
 
   private volatile ConfigManager m_configManager;
   private volatile ConfigRegistry m_configRegistry;
@@ -81,8 +85,7 @@ public class ConfigService {
     return s_instance.getManager().getConfig(appId, namespace);
   }
 
-
-  public static ConfigFile  getConfigFile(String namespace, ConfigFileFormat configFileFormat) {
+  public static ConfigFile getConfigFile(String namespace, ConfigFileFormat configFileFormat) {
     return s_instance.getManager().getConfigFile(namespace, configFileFormat);
   }
 
@@ -105,6 +108,9 @@ public class ConfigService {
 
       @Override
       public Config create(String appId, String namespace) {
+        if(!StringUtils.equals(appId,m_configUtil.getAppId())){
+          throw new IllegalArgumentException("appId not match");
+        }
         return config;
       }
 

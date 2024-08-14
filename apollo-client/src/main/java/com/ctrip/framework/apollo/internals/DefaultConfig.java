@@ -16,8 +16,10 @@
  */
 package com.ctrip.framework.apollo.internals;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.utils.DeferredLoggerFactory;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.IOException;
@@ -54,6 +56,23 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
   private final RateLimiter m_warnLogRateLimiter;
 
   private volatile ConfigSourceType m_sourceType = ConfigSourceType.NONE;
+
+  /**
+   * Constructor.
+   *
+   * @param namespace        the namespace of this config instance
+   * @param configRepository the config repository for this config instance
+   */
+  public DefaultConfig(String namespace, ConfigRepository configRepository) {
+    ConfigUtil configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+    m_appId = configUtil.getAppId();
+    m_namespace = namespace;
+    m_resourceProperties = loadFromResource(m_appId, m_namespace);
+    m_configRepository = configRepository;
+    m_configProperties = new AtomicReference<>();
+    m_warnLogRateLimiter = RateLimiter.create(0.017); // 1 warning log output per minute
+    initialize();
+  }
 
   /**
    * Constructor.

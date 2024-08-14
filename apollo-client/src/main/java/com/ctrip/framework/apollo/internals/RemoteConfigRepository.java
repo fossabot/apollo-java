@@ -191,7 +191,7 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     String appId = this.m_appId;
     String cluster = m_configUtil.getCluster();
     String dataCenter = m_configUtil.getDataCenter();
-    String secret = m_configUtil.getAppSecret(appId);
+    String secret = m_configUtil.getAccessKeySecret(appId);
     Tracer.logEvent("Apollo.Client.ConfigMeta", STRING_JOINER.join(appId, cluster, m_namespace));
     int maxRetries = m_configNeedForceRefresh.get() ? 2 : 1;
     long onErrorSleepTime = 0; // 0 means no sleep

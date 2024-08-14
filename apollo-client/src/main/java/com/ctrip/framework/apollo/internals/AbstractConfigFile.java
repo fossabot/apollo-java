@@ -96,7 +96,7 @@ public abstract class AbstractConfigFile implements ConfigFile, RepositoryChange
 
   @Override
   public synchronized void onRepositoryChange(String namespace, Properties newProperties) {
-    this.onRepositoryChange(m_appId, namespace, newProperties);
+    this.onRepositoryChange(m_appId, m_namespace, newProperties);
   }
 
   @Override

@@ -47,6 +47,10 @@ public class ConfigFileChangeEvent {
     this.changeType = changeType;
   }
 
+  public String getAppId() {
+    return appId;
+  }
+
   public String getNamespace() {
     return namespace;
   }

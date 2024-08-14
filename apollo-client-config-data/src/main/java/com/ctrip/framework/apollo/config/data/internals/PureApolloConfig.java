@@ -16,9 +16,11 @@
  */
 package com.ctrip.framework.apollo.config.data.internals;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.internals.ConfigRepository;
 import com.ctrip.framework.apollo.internals.DefaultConfig;
 import com.ctrip.framework.apollo.internals.RepositoryChangeListener;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import org.springframework.util.CollectionUtils;
@@ -28,9 +30,22 @@ import org.springframework.util.CollectionUtils;
  */
 public class PureApolloConfig extends DefaultConfig implements RepositoryChangeListener {
 
+
   /**
    * Constructor.
    *
+   * @param namespace        the namespace of this config instance
+   * @param configRepository the config repository for this config instance
+   */
+  public PureApolloConfig(String namespace,
+      ConfigRepository configRepository) {
+    super(namespace, configRepository);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param appId        the appId of this config instance
    * @param namespace        the namespace of this config instance
    * @param configRepository the config repository for this config instance
    */

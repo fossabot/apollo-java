@@ -86,7 +86,7 @@ public class RemoteConfigLongPollService {
   public RemoteConfigLongPollService() {
     m_longPollFailSchedulePolicyInSecond = new ExponentialSchedulePolicy(1, 120); //in second
     m_longPollingStopped = new AtomicBoolean(false);
-    m_longPollingService = new ThreadPoolExecutor(10, 10,
+    m_longPollingService = new ThreadPoolExecutor(1, 10,
         0L, TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<Runnable>(),
         ApolloThreadFactory.create("RemoteConfigLongPollService", true));
@@ -121,7 +121,7 @@ public class RemoteConfigLongPollService {
       final String appId = sysAppId;
       final String cluster = m_configUtil.getCluster();
       final String dataCenter = m_configUtil.getDataCenter();
-      final String secret = m_configUtil.getAppSecret(appId);
+      final String secret = m_configUtil.getAccessKeySecret(appId);
       final long longPollingInitialDelayInMills = m_configUtil.getLongPollingInitialDelayInMills();
       m_longPollingService.submit(new Runnable() {
         @Override

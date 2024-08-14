@@ -59,7 +59,7 @@ public class DefaultConfigFactoryTest {
 
   @Before
   public void setUp() throws Exception {
-    someAppId = "someId";
+    someAppId = "someAppId";
     someEnv = Env.DEV;
     MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
     defaultConfigFactory = spy(new DefaultConfigFactory());

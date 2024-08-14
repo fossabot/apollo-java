@@ -89,7 +89,7 @@ public class AutoUpdateConfigChangeListener implements ConfigChangeListener,
     }
   }
 
-  protected void updateSpringValue(SpringValue springValue) {
+  private void updateSpringValue(SpringValue springValue) {
     try {
       Object value = resolvePropertyValue(springValue);
       springValue.update(value);
@@ -107,7 +107,7 @@ public class AutoUpdateConfigChangeListener implements ConfigChangeListener,
    * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor,
    * java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
    */
-  protected Object resolvePropertyValue(SpringValue springValue) {
+  private Object resolvePropertyValue(SpringValue springValue) {
     // value will never be null, as @Value and @ApolloJsonValue will not allow that
     Object value = placeholderHelper
         .resolvePropertyValue(beanFactory, springValue.getBeanName(), springValue.getPlaceholder());

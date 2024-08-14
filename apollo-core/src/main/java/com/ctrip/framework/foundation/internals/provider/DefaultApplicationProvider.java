@@ -116,6 +116,14 @@ public class DefaultApplicationProvider implements ApplicationProvider {
     return ApplicationProvider.class;
   }
 
+  @Override
+  public String getAccessKeySecret(String appId){
+    if(m_appId.equals(appId)){
+      return getAccessKeySecret();
+    }
+    return System.getProperty("apollo.accesskey." + appId + ".secret", "");
+  }
+
   private void initAppId() {
     // 1. Get app.id from System Property
     m_appId = System.getProperty(ApolloClientSystemConsts.APP_ID);

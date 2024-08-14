@@ -73,5 +73,5 @@ public @interface EnableApolloConfig {
   /**
    * Additional appId and namespace configurations. Will not participate in bootstrap
    */
-  MultipleConfig[] multipleConfig() default {};
+  MultipleConfig[] multipleConfigs() default {};
 }

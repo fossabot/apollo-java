@@ -46,4 +46,9 @@ public interface ApplicationProvider extends Provider {
    * Initialize the application provider with the specified input stream
    */
   void initialize(InputStream in);
+
+  /**
+   * @return the application's access key secret by appId
+   */
+  String getAccessKeySecret(String appId);
 }

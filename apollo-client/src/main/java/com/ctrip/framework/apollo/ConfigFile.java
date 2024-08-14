@@ -39,7 +39,9 @@ public interface ConfigFile {
    * Get the appId of this config file instance
    * @return the appId
    */
-  String getAppId();
+  default String getAppId(){
+    return null;
+  }
 
   /**
    * Get the namespace of this config file instance

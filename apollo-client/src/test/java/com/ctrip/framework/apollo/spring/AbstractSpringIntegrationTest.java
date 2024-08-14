@@ -20,6 +20,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import com.ctrip.framework.apollo.ConfigServiceTest;
+import com.ctrip.framework.apollo.ConfigServiceTest.MockConfigUtil;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ApolloClientSystemConsts;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.ConfigRepository;
@@ -176,7 +179,7 @@ public abstract class AbstractSpringIntegrationTest {
     CONFIG_FILE_REGISTRY.put(appId + "+" + namespaceNameWithFormat, configFile);
   }
 
-  protected static void doSetUp() {
+  protected static void doSetUp() throws Exception {
     System.setProperty(ApolloClientSystemConsts.APP_ID, "someAppId");
 
     //as ConfigService is singleton, so we must manually clear its container
@@ -191,9 +194,14 @@ public abstract class AbstractSpringIntegrationTest {
     MockConfigUtil configUtil = new MockConfigUtil();
     configUtil.setAutoUpdateInjectedSpringProperties(true);
     MockInjector.setInstance(ConfigUtil.class, configUtil);
+
+    Field field = PropertySourcesProcessor.class.getDeclaredField("configUtil");
+    field.setAccessible(true);
+    field.set(null, ApolloInjector.getInstance(ConfigUtil.class));
+
   }
 
-  protected static void doTearDown() {
+  protected static void doTearDown(){
     MockInjector.reset();
     CONFIG_REGISTRY.clear();
   }
